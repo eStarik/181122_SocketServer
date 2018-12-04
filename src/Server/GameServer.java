@@ -1,3 +1,5 @@
+package Server;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.ServerSocket;
@@ -7,10 +9,7 @@ import java.util.ArrayList;
 import SharedVariables.GameSelectives;
 import SharedVariables.Messages;
 
-import javax.swing.*;
-
-import static SharedVariables.Messages.playerStartMSG;
-import static SharedVariables.Messages.serverStartAck;
+import static SharedVariables.Messages.serverClientWon;
 import static SharedVariables.Messages.serverStartGame;
 
 public class GameServer {
@@ -64,11 +63,21 @@ public class GameServer {
                         }
                     }
                 }
+                gameState = 2;
+                //TODO nächster Spielabschnitt
+            }else if(gameState == 2){
                 //If all clients ready -> Start game
                 for (GamePlayer c : clients) {
                     c.send(serverStartGame);
                 }
-                //TODO nächster Spielabschnitt
+                gameState = 3;
+            }else if(gameState == 3){
+                for (GamePlayer c: clients) {
+                    if(c.playerFinished()){
+                        c.send(serverClientWon);
+                    }
+                }
+
             }
         }
     };
@@ -80,15 +89,17 @@ public class GameServer {
             public void run(){
                 try(ServerSocket server = new ServerSocket(port)) {
                     while (running) {
-                        //Client verbindet sich auf den Server
-                        Socket client = server.accept();
+                        if(gameState == 0) {
+                            //Client verbindet sich auf den Server
+                            Socket client = server.accept();
 
-                        //Weitere Aktionen mit dem Client
-                        GamePlayer p = new GamePlayer(client);
-                        p.addActionListener(startListener);
-                        clients.add(p);
-                        p.start();
-                        System.out.println("Derzeitige Anzahl der Verbindungen: "+clients.size()+"\n");
+                            //Weitere Aktionen mit dem Client
+                            GamePlayer p = new GamePlayer(client);
+                            p.addActionListener(startListener);
+                            clients.add(p);
+                            p.start();
+                            System.out.println("Derzeitige Anzahl der Verbindungen: " + clients.size() + "\n");
+                        }
                     }
                 }catch (Exception e){
 

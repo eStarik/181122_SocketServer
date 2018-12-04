@@ -1,3 +1,5 @@
+package Server;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.DataInputStream;
@@ -13,9 +15,10 @@ public class GamePlayer {
     protected String message = "";
 
     //logic variables
-    boolean startet = false;
-    boolean acknowledged = false;
+    private boolean startet = false;
+    private boolean acknowledged = false;
     private boolean running = false;
+    private boolean finished = false;
 
     //connection variables
     private Socket connection = new Socket();
@@ -40,6 +43,8 @@ public class GamePlayer {
         }
 
         this.addActionListener(readyListener);
+        this.addActionListener(finishListener);
+        this.addActionListener(ackListener);
 
         Thread t = new Thread(){
             @Override
@@ -88,6 +93,7 @@ public class GamePlayer {
         return startet;
     }
     public boolean playerAcknowledged(){ return acknowledged;}
+    public boolean playerFinished(){return finished;}
 
     public void playerStarted(boolean start){
         startet = start;
@@ -95,6 +101,7 @@ public class GamePlayer {
     public void playerAcknowledged(boolean acknowledge){
         acknowledged = acknowledge;
     }
+    public void playerFinished(boolean finish){finished = finish;}
 
     //Actionlistener for ready
     private ActionListener readyListener = new ActionListener() {
@@ -113,6 +120,16 @@ public class GamePlayer {
         public void actionPerformed(ActionEvent actionEvent) {
             if(message == clientAck){
                 playerAcknowledged(true);
+            }
+        }
+    };
+
+    //Get finish from clients
+    private ActionListener finishListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(message == clientFinish){
+                playerFinished(true);
             }
         }
     };
