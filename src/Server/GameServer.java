@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import SharedVariables.GameSelectives;
 import SharedVariables.Messages;
 
-import static SharedVariables.Messages.serverClientWon;
-import static SharedVariables.Messages.serverStartGame;
+import static SharedVariables.Messages.*;
 
 public class GameServer {
     private boolean ready = false;
@@ -36,11 +35,6 @@ public class GameServer {
                         if (!c.playerStarted()) {
                             ready = false;
                         }
-                /* From ChatServer
-                if(!c.equals(actionEvent.getSource())) {
-                    c.send(actionEvent.getActionCommand());
-                }
-                */
                     }
                 }
                 for (GamePlayer c : clients) {
@@ -50,7 +44,6 @@ public class GameServer {
                     for (int i = 0; i >= buttonCount; i++) {
                         buttons = buttons + GameSelectives.getButton() + ",";
                     }
-
                     c.send(Messages.serverRandButton + buttons);
                 }
                 gameState = 1;
@@ -77,8 +70,21 @@ public class GameServer {
                         c.send(serverClientWon);
                     }
                 }
-
+                gameState = 4;
+            }else if(gameState == 4){
+                for (GamePlayer c: clients) {
+                    if(!c.playerFinished()){
+                        c.send(serverClientLost);
+                    }
+                }
+                gameState = 5;
+            }else if(gameState == 5){
+                for (GamePlayer c: clients) {
+                    c.send(serverReset);
+                    c.reset();
+                }
             }
+
         }
     };
 

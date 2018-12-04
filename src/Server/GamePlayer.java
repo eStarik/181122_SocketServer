@@ -134,7 +134,11 @@ public class GamePlayer {
         }
     };
 
-
-
-    //TODO other ActionListeners?
+    public void reset(){
+        startet = false;
+        acknowledged = false;
+        running = false;
+        finished = false;
+        message = "";
+    }
 }
