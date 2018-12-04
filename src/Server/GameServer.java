@@ -19,7 +19,7 @@ public class GameServer {
     private ArrayList<GamePlayer> clients = new ArrayList<>();
     private int gameState = 0;
 
-    // ghj
+    // ghjfgtuez
     public GameServer(int port){
         this.port = port;
 
