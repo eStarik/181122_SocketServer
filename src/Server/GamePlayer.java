@@ -12,6 +12,7 @@ import static SharedVariables.Messages.*;
 public class GamePlayer {
 
     //Program variables
+    // dhdghsdfdsfsdf
     protected String message = "";
 
     //logic variables
@@ -140,5 +141,9 @@ public class GamePlayer {
         running = false;
         finished = false;
         message = "";
+    }
+
+    public boolean isConnected(){
+        return running;
     }
 }
