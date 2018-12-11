@@ -13,7 +13,7 @@ public class GamePlayer {
 
     //Program variables
     // dhdghsdfdsfsdf
-    protected String message = "";
+    protected String message = ".";
 
     //logic variables
     private boolean startet = false;
@@ -132,6 +132,14 @@ public class GamePlayer {
             if(message == clientFinish){
                 playerFinished(true);
             }
+        }
+    };
+
+    //Debug print messages
+    private ActionListener massageOutputListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            System.out.println(message);
         }
     };
 
