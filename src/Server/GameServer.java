@@ -5,11 +5,14 @@ import java.awt.event.ActionListener;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 
 import SharedVariables.GameSelectives;
 import SharedVariables.Messages;
 
 import static SharedVariables.Messages.*;
+import static SharedVariables.constants.MAX_BUTTONS;
+import static SharedVariables.constants.MIN_BUTTONS;
 
 public class GameServer {
     private boolean ready = false;
@@ -28,7 +31,6 @@ public class GameServer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             //sende Nachricht an alle Clients die dem Server derzeit bekannt sind
-
         }
     };
 
@@ -45,12 +47,13 @@ public class GameServer {
                             }
                         }
                     }
+                    System.out.println("All players accepted");            //Debug show all clients accpeted
                     //Get random time
                     int randTime = GameSelectives.randTime();
                     //get random buttons
                     String buttons = "";
                     int buttonCount = GameSelectives.randButtonCount();
-                    for (int i = 0; i >= buttonCount; i++) {
+                    for (int i = 0; i <= buttonCount; i++) {
                         buttons = buttons + GameSelectives.getButton() + ",";
                     }
                     for (GamePlayer c : clients) {
@@ -58,6 +61,7 @@ public class GameServer {
                         c.send(Messages.serverRandButton + buttons);
                     }
                     gameState = 1;
+                    System.out.println("All players values sent");            //Debug show all clients ready values sent
                 }else if(gameState == 1){
                     while(!clientAck){
                         clientAck = true;
@@ -68,7 +72,7 @@ public class GameServer {
                         }
                     }
                     gameState = 2;
-                    System.out.println("All players accepted");             //Debug show all clients ready in console
+                    System.out.println("All players acknowledge");             //Debug show all clients have received there values
                 }else if(gameState == 2){
                     //If all clients ready -> Start game
                     for (GamePlayer c : clients) {
@@ -114,10 +118,9 @@ public class GameServer {
             public void run(){
                 try(ServerSocket server = new ServerSocket(port)) {
                     while (running) {
-                        if(gameState == 0) {
-                            //Client verbindet sich auf den Server
+                        //Client verbindet sich auf den Server
+                        if (gameState == 0) {
                             Socket client = server.accept();
-
                             //Weitere Aktionen mit dem Client
                             GamePlayer p = new GamePlayer(client);
                             p.addActionListener(startListener);
@@ -125,6 +128,7 @@ public class GameServer {
                             p.start();
                             System.out.println("Derzeitige Anzahl der Verbindungen: " + clients.size() + "\n");
                         }
+                        gameLogic();
                     }
                 }catch (Exception e){
 
