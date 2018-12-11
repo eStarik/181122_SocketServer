@@ -38,73 +38,76 @@ public class GameServer {
         Thread gameLogicThreat = new Thread(){
             @Override
             public void run() {
-                if(gameState == 0) {
-                    while (!ready) {
-                        ready = true;
-                        for (GamePlayer c : clients) {
-                            if (!c.playerStarted()) {
-                                ready = false;
+                while (gameState <= 5) {
+                    if (gameState == 0) {
+                        while (!ready) {
+                            ready = true;
+                            for (GamePlayer c : clients) {
+                                if (!c.playerStarted()) {
+                                    ready = false;
+                                }
                             }
                         }
-                    }
-                    System.out.println("All players accepted");            //Debug show all clients accpeted
-                    //Get random time
-                    int randTime = GameSelectives.randTime();
-                    //get random buttons
-                    String buttons = "";
-                    int buttonCount = GameSelectives.randButtonCount();
-                    for (int i = 0; i <= buttonCount; i++) {
-                        buttons = buttons + GameSelectives.getButton() + ",";
-                    }
-                    for (GamePlayer c : clients) {
-                        c.send(Messages.serverRandTime + randTime);
-                        c.send(Messages.serverRandButton + buttons);
-                    }
-                    gameState = 1;
-                    System.out.println("All players values sent");            //Debug show all clients ready values sent
-                }else if(gameState == 1){
-                    while(!clientAck){
-                        clientAck = true;
+                        System.out.println("All players accepted");            //Debug show all clients accpeted
+                        //Get random time
+                        int randTime = GameSelectives.randTime();
+                        //get random buttons
+                        String buttons = "";
+                        int buttonCount = GameSelectives.randButtonCount();
+                        for (int i = 0; i <= buttonCount; i++) {
+                            buttons = buttons + GameSelectives.getButton() + ",";
+                        }
                         for (GamePlayer c : clients) {
-                            if (!c.playerAcknowledged()) {
-                                clientAck = false;
+                            c.send(Messages.serverRandTime + randTime);
+                            c.send(Messages.serverRandButton + buttons);
+                        }
+                        gameState = 1;
+                        System.out.println("All players values sent");            //Debug show all clients ready values sent
+                    } else if (gameState == 1) {
+                        while (!clientAck) {
+                            clientAck = true;
+                            for (GamePlayer c : clients) {
+                                if (!c.playerAcknowledged()) {
+                                    clientAck = false;
+                                }
                             }
                         }
-                    }
-                    gameState = 2;
-                    System.out.println("All players acknowledge");             //Debug show all clients have received there values
-                }else if(gameState == 2){
-                    //If all clients ready -> Start game
-                    for (GamePlayer c : clients) {
-                        c.send(serverStartGame);
-                    }
-                    gameState = 3;
-                    System.out.println("game started");                     //Debug show game started in console
-                }else if(gameState == 3){
-                    //client has won -> send won
-                    for (GamePlayer c: clients) {
-                        if(c.playerFinished()){
-                            c.send(serverClientWon);
+                        gameState = 2;
+                        System.out.println("All players acknowledge");             //Debug show all clients have received there values
+                    } else if (gameState == 2) {
+                        //If all clients ready -> Start game
+                        for (GamePlayer c : clients) {
+                            c.send(serverStartGame);
                         }
-                    }
-                    gameState = 4;
-                    System.out.println("A player was sent \"winner\"");     //Debug show "winner" sent
-                }else if(gameState == 4){
-                    //all clients who haven't won -> send loose
-                    for (GamePlayer c: clients) {
-                        if(!c.playerFinished()){
-                            c.send(serverClientLost);
+                        gameState = 3;
+                        System.out.println("game started");                     //Debug show game started in console
+                    } else if (gameState == 3) {
+                        //client has won -> send won
+                        for (GamePlayer c : clients) {
+                            if (c.playerFinished()) {
+                                c.send(serverClientWon);
+                            }
                         }
+                        gameState = 4;
+                        System.out.println("A player was sent \"winner\"");     //Debug show "winner" sent
+                    } else if (gameState == 4) {
+                        //all clients who haven't won -> send loose
+                        for (GamePlayer c : clients) {
+                            if (!c.playerFinished()) {
+                                c.send(serverClientLost);
+                            }
+                        }
+                        gameState = 5;
+                        System.out.println("A player was sent \"looser\"");      //Debug show "looser" sent
+                    } else if (gameState == 5) {
+                        //send start new game -> clients should reset
+                        for (GamePlayer c : clients) {
+                            c.send(serverReset);
+                            c.reset();
+                        }
+                        System.out.println("restart Game");                     //Debug show game restart sent
+                        gameState = 6;
                     }
-                    gameState = 5;
-                    System.out.println("A player was sent \"looser\"");      //Debug show "looser" sent
-                }else if(gameState == 5){
-                    //send start new game -> clients should reset
-                    for (GamePlayer c: clients) {
-                        c.send(serverReset);
-                        c.reset();
-                    }
-                    System.out.println("restart Game");                     //Debug show game restart sent
                 }
             }
         };

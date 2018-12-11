@@ -46,6 +46,7 @@ public class GamePlayer {
         this.addActionListener(readyListener);
         this.addActionListener(finishListener);
         this.addActionListener(ackListener);
+        this.addActionListener(massageOutputListener);
 
         Thread t = new Thread(){
             @Override
@@ -119,7 +120,7 @@ public class GamePlayer {
     private ActionListener ackListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message == clientAck){
+            if(message.equals(clientAck)){
                 playerAcknowledged(true);
             }
         }
@@ -129,7 +130,7 @@ public class GamePlayer {
     private ActionListener finishListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message == clientFinish){
+            if(message.equals(clientFinish)){
                 playerFinished(true);
             }
         }
@@ -149,6 +150,9 @@ public class GamePlayer {
         running = false;
         finished = false;
         message = "";
+        playerFinished(false);
+        playerAcknowledged(false);
+        playerStarted(false);
     }
 
     public boolean isConnected(){
