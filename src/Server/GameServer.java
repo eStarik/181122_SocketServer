@@ -86,10 +86,12 @@ public class GameServer {
                         for (GamePlayer c : clients) {
                             if (c.playerFinished()) {
                                 c.send(serverClientWon);
+                                gameState = 4;
+                                System.out.println("A player was sent \"winner\"");     //Debug show "winner" sent
+                                break;
                             }
                         }
-                        gameState = 4;
-                        System.out.println("A player was sent \"winner\"");     //Debug show "winner" sent
+
                     } else if (gameState == 4) {
                         //all clients who haven't won -> send loose
                         for (GamePlayer c : clients) {
