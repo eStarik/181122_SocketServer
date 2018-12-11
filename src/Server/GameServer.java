@@ -19,7 +19,6 @@ public class GameServer {
     private ArrayList<GamePlayer> clients = new ArrayList<>();
     private int gameState = 0;
 
-    // ghjfgtuez
     public GameServer(int port){
         this.port = port;
 
@@ -38,13 +37,17 @@ public class GameServer {
                         }
                     }
                 }
+
+                //Get random time
+                int randTime = GameSelectives.randTime();
+                //get random buttons
+                String buttons = "";
+                int buttonCount = GameSelectives.randButtonCount();
+                for (int i = 0; i >= buttonCount; i++) {
+                    buttons = buttons + GameSelectives.getButton() + ",";
+                }
                 for (GamePlayer c : clients) {
-                    c.send(Messages.serverRandTime + GameSelectives.randTime());
-                    int buttonCount = GameSelectives.randButtonCount();
-                    String buttons = "";
-                    for (int i = 0; i >= buttonCount; i++) {
-                        buttons = buttons + GameSelectives.getButton() + ",";
-                    }
+                    c.send(Messages.serverRandTime + randTime);
                     c.send(Messages.serverRandButton + buttons);
                 }
                 gameState = 1;
@@ -58,7 +61,6 @@ public class GameServer {
                     }
                 }
                 gameState = 2;
-                //TODO nächster Spielabschnitt
             }else if(gameState == 2){
                 //If all clients ready -> Start game
                 for (GamePlayer c : clients) {

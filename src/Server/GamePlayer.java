@@ -107,7 +107,7 @@ public class GamePlayer {
     private ActionListener readyListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message == playerStartMSG){
+            if(message.equals(playerStartMSG)){
                 playerStarted(true);
                 send(serverStartAck);
             }
