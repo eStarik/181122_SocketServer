@@ -1,5 +1,6 @@
 package Client;
 
+import Server.GamePlayer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,7 +12,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
+import java.io.DataInputStream;
 import java.util.Random;
+
+import static SharedVariables.Messages.playerStartMSG;
+import static SharedVariables.Messages.serverStartAck;
+
 //
 public class GUI extends Application {
 
@@ -29,6 +35,9 @@ public class GUI extends Application {
     public boolean running = false;
     public boolean runagain = false;
 
+    public boolean multiplayer = false;
+    public String serverToClient;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -40,6 +49,9 @@ public class GUI extends Application {
 
         initBtnsArray();
         Group root = new Group();
+        GameClient player = new GameClient("localhost", 1234);
+
+        //serverToClient = new DataInputStream(connection.getInputStream());
 
         startButton.setPrefSize(1000, 100);
         startButton.setStyle("-fx-background-color: #90aa00");
@@ -51,6 +63,13 @@ public class GUI extends Application {
                     startButton.setText("STOP");
                     start = 0;
                     running = true;
+
+                    if(multiplayer){
+                        player.sendMessage(playerStartMSG);
+                        if(serverToClient == serverStartAck){ // received message
+
+                        }
+                    }
 
                     Thread gameThread = new Thread(){
                         @Override
