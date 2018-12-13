@@ -1,6 +1,7 @@
 package Client;
 
 import Server.GamePlayer;
+import Client.GUI;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +9,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import static SharedVariables.Messages.*;
+import static SharedVariables.Messages.playerStartMSG;
 
 public class GameClient {
 
@@ -80,5 +84,6 @@ public class GameClient {
             }
         }
     }
+
 }
 

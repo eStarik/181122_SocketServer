@@ -15,8 +15,7 @@ import javafx.stage.Stage;
 import java.io.DataInputStream;
 import java.util.Random;
 
-import static SharedVariables.Messages.playerStartMSG;
-import static SharedVariables.Messages.serverStartAck;
+import static SharedVariables.Messages.*;
 
 //
 public class GUI extends Application {
@@ -36,7 +35,16 @@ public class GUI extends Application {
     public boolean runagain = false;
 
     public boolean multiplayer = false;
-    public String serverToClient;
+    public boolean runMultiplayer = false;
+    public boolean reset = false;
+
+    public String[] randTimeString;
+    public String[] randButtonString;
+
+    public int randTime;
+    public int[] randButtons;
+
+    public GameClient player = new GameClient("localhost", 1234);
 
     public static void main(String[] args) {
         launch(args);
@@ -49,7 +57,6 @@ public class GUI extends Application {
 
         initBtnsArray();
         Group root = new Group();
-        GameClient player = new GameClient("localhost", 1234);
 
         //serverToClient = new DataInputStream(connection.getInputStream());
 
@@ -65,11 +72,66 @@ public class GUI extends Application {
                     running = true;
 
                     if(multiplayer){
-                        player.sendMessage(playerStartMSG);
-                        if(serverToClient == serverStartAck){ // received message
-
-                        }
+                        Multiplayer();
                     }
+
+                    Thread multiplayerThread = new Thread(){
+                        @Override
+                        public void run() {
+                            while (runMultiplayer){
+                                reset = false;
+                                try {
+                                    Thread.sleep(randTime);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                int anzButtons = randButtons.length;
+
+                                for (int i = 0; i <= anzButtons; i++){
+                                    btns[randButtons[i]].setDisable(false);
+                                    btns[randButtons[i]].setStyle("-fx-background-color: #00ff00");
+                                }
+                                for(int bt = 0; bt <= 15; bt++){
+                                    if(btns[bt].isDisabled() == false){
+                                        runagain = true;
+                                    }
+                                }
+                                while (runagain){
+                                    int btr = 0;
+                                    for(int bt = 0; bt <= 15; bt++){
+                                        if(btns[bt].isDisabled()){
+                                            btr++;
+                                            if(btr == 16){
+                                                //runagain = false;
+                                                // send finish
+                                                player.sendMessage(clientFinish);
+
+                                                if(GamePlayer.message == serverClientWon){
+                                                    System.out.println("You won :)");
+                                                } else if(GamePlayer.message == serverClientLost){
+                                                    System.out.println("You lost :(");
+                                                } else if(GamePlayer.message == serverReset){
+                                                    for (int i = 0; i <= 15; i++){
+                                                        btns[i].setDisable(true);
+                                                        btns[i].setStyle(null);
+                                                    }
+                                                    reset = true;
+                                                }
+
+                                                //resetmsg -> reset Buttons
+
+                                                // send start
+                                                // if received randTime & randButtons
+                                                Multiplayer();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    multiplayerThread.start();
 
                     Thread gameThread = new Thread(){
                         @Override
@@ -184,5 +246,36 @@ public class GUI extends Application {
         Random random = new Random();
         int randomNumber = random.nextInt((int)Math.sqrt(NUMBER_OF_BUTTONS) - 1) + 1;
         return(randomNumber);
+    }
+
+    public void Multiplayer(){
+        player.sendMessage(playerStartMSG);
+        if(GamePlayer.message == serverStartAck){
+
+            // Get and set the randomTime, randomButtons...
+            if(GamePlayer.message.contains("RandTime:")){
+                randTimeString = GamePlayer.message.split(",");
+                randTime = Integer.valueOf(randTimeString[1]);
+            } else if (GamePlayer.message.contains("RandButton:")){
+                randButtonString = GamePlayer.message.split(",");
+                int index = 0;
+                for(int i = 1; i < randButtonString.length; i++){
+                    index++;
+                    // Array with the buttonnumbers to enable
+                    randButtons[index] = Integer.valueOf(randButtonString[i]);
+                }
+            } else {
+                System.out.println("Error: Client doesn't receive RandTime or RandButton!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+
+            if(randTimeString[0].contains("RandTime:") && randButtonString[0].contains("RandButton:")){
+                player.sendMessage(clientAck);
+                if(GamePlayer.message == serverStartGame){
+                    runMultiplayer = true;
+                }
+            }
+        } else {
+            player.sendMessage(playerStartMSG);
+        }
     }
 }
