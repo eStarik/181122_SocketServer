@@ -13,6 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.Random;
 
 import static SharedVariables.Messages.*;
@@ -107,16 +108,20 @@ public class GUI extends Application {
                                                 // send finish
                                                 player.sendMessage(clientFinish);
 
-                                                if(GamePlayer.message == serverClientWon){
-                                                    System.out.println("You won :)");
-                                                } else if(GamePlayer.message == serverClientLost){
-                                                    System.out.println("You lost :(");
-                                                } else if(GamePlayer.message == serverReset){
-                                                    for (int i = 0; i <= 15; i++){
-                                                        btns[i].setDisable(true);
-                                                        btns[i].setStyle(null);
+                                                try {
+                                                    if(GamePlayer.receive.readUTF() == serverClientWon){
+                                                        System.out.println("You won :)");
+                                                    } else if(GamePlayer.receive.readUTF() == serverClientLost){
+                                                        System.out.println("You lost :(");
+                                                    } else if(GamePlayer.receive.readUTF() == serverReset){
+                                                        for (int i = 0; i <= 15; i++){
+                                                            btns[i].setDisable(true);
+                                                            btns[i].setStyle(null);
+                                                        }
+                                                        reset = true;
                                                     }
-                                                    reset = true;
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
                                                 }
 
                                                 //resetmsg -> reset Buttons
@@ -250,32 +255,36 @@ public class GUI extends Application {
 
     public void Multiplayer(){
         player.sendMessage(playerStartMSG);
-        if(GamePlayer.message == serverStartAck){
+        try {
+            if(GamePlayer.receive.readUTF() == serverStartAck){
 
-            // Get and set the randomTime, randomButtons...
-            if(GamePlayer.message.contains("RandTime:")){
-                randTimeString = GamePlayer.message.split(",");
-                randTime = Integer.valueOf(randTimeString[1]);
-            } else if (GamePlayer.message.contains("RandButton:")){
-                randButtonString = GamePlayer.message.split(",");
-                int index = 0;
-                for(int i = 1; i < randButtonString.length; i++){
-                    index++;
-                    // Array with the buttonnumbers to enable
-                    randButtons[index] = Integer.valueOf(randButtonString[i]);
+                // Get and set the randomTime, randomButtons...
+                if(GamePlayer.receive.readUTF().contains("RandTime:")){
+                    randTimeString = GamePlayer.receive.readUTF().split(",");
+                    randTime = Integer.valueOf(randTimeString[1]);
+                } else if (GamePlayer.receive.readUTF().contains("RandButton:")){
+                    randButtonString = GamePlayer.receive.readUTF().split(",");
+                    int index = 0;
+                    for(int i = 1; i < randButtonString.length; i++){
+                        index++;
+                        // Array with the buttonnumbers to enable
+                        randButtons[index] = Integer.valueOf(randButtonString[i]);
+                    }
+                } else {
+                    System.out.println("Error: Client doesn't receive RandTime or RandButton!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                }
+
+                if(randTimeString[0].contains("RandTime:") && randButtonString[0].contains("RandButton:")){
+                    player.sendMessage(clientAck);
+                    if(GamePlayer.receive.readUTF() == serverStartGame){
+                        runMultiplayer = true;
+                    }
                 }
             } else {
-                System.out.println("Error: Client doesn't receive RandTime or RandButton!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                player.sendMessage(playerStartMSG);
             }
-
-            if(randTimeString[0].contains("RandTime:") && randButtonString[0].contains("RandButton:")){
-                player.sendMessage(clientAck);
-                if(GamePlayer.message == serverStartGame){
-                    runMultiplayer = true;
-                }
-            }
-        } else {
-            player.sendMessage(playerStartMSG);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

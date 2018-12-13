@@ -24,7 +24,7 @@ public class GamePlayer {
     //connection variables
     private Socket connection = new Socket();
     //IO Streams
-    private DataInputStream receive;
+    public static DataInputStream receive;
     private DataOutputStream transmit;
 
     private ArrayList<ActionListener> listener = new ArrayList<>();
