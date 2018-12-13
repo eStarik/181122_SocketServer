@@ -2,11 +2,13 @@ package Client;
 
 import Server.GamePlayer;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -59,7 +61,7 @@ public class GUI extends Application {
         initBtnsArray();
         Group root = new Group();
 
-        //serverToClient = new DataInputStream(connection.getInputStream());
+
 
         startButton.setPrefSize(1000, 100);
         startButton.setStyle("-fx-background-color: #90aa00");
@@ -123,11 +125,6 @@ public class GUI extends Application {
                                                 } catch (IOException e) {
                                                     e.printStackTrace();
                                                 }
-
-                                                //resetmsg -> reset Buttons
-
-                                                // send start
-                                                // if received randTime & randButtons
                                                 Multiplayer();
                                             }
                                         }
@@ -174,7 +171,6 @@ public class GUI extends Application {
                                     }
                                 }
                             }
-                            // while ...
                         }
                     };
                     gameThread.start();
@@ -188,15 +184,19 @@ public class GUI extends Application {
             }
         });
 
-
         BorderPane abc = new BorderPane();
         abc.setCenter(getGrid());
         abc.setBottom(startButton);
+        abc.setTop(initSettings());
 
         root.getChildren().add(abc);
+
         Scene scene = new Scene(root, 1000, 500);
 
         primaryStage.setScene(scene);
+
+        //primaryStage.sizeToScene();
+        //primaryStage.setResizable(false);
 
         primaryStage.show();
     }
@@ -224,6 +224,58 @@ public class GUI extends Application {
             i++;
         }
         return gridPane;
+    }
+
+    private Pane initSettings(){
+        BorderPane settingPane = new BorderPane();
+        GridPane radioPane = new GridPane();
+        GridPane hostportPane = new GridPane();
+        final ToggleGroup buttonGroup = new ToggleGroup();
+        RadioButton spButton = new RadioButton("SinglePlayer");
+        spButton.setToggleGroup(buttonGroup);
+        spButton.setSelected(true);
+        RadioButton mpButton = new RadioButton("MultiPlayer");
+        mpButton.setToggleGroup(buttonGroup);
+        radioPane.add(spButton, 0,0);
+        radioPane.add(mpButton, 0,1);
+        TextField hostField = new TextField();
+        TextField portField = new TextField();
+        Label hostLabel = new Label(" Host: ");
+        Label portLabel = new Label(" Port: ");
+        settingPane.setLeft(radioPane);
+        hostportPane.add(hostLabel,0,0);
+        hostportPane.add(hostField,1,0);
+        hostportPane.add(portLabel,2,0);
+        hostportPane.add(portField,3,0);
+        Button okButton = new Button("OK");
+        hostField.setDisable(true);
+        portField.setDisable(true);
+        okButton.setDisable(true);
+        settingPane.setCenter(hostportPane);
+        settingPane.setRight(okButton);
+        buttonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if(spButton.isSelected() == true){
+                    hostField.setDisable(true);
+                    portField.setDisable(true);
+                    okButton.setDisable(true);
+                } else if (mpButton.isSelected() == true){
+                    hostField.setDisable(false);
+                    portField.setDisable(false);
+                    okButton.setDisable(false);
+                }
+            }
+        });
+        okButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                multiplayer = true;
+                GameClient gamer = new GameClient(hostField.getText(), Integer.valueOf(portField.getText()));
+            }
+        });
+
+        return settingPane;
     }
 
     private void initBtnsArray() {

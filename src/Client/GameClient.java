@@ -10,13 +10,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import static SharedVariables.Messages.*;
-import static SharedVariables.Messages.playerStartMSG;
-
 public class GameClient {
 
-    private String host;
-    private int port;
+    public String host;
+    public int port;
 
     private GamePlayer connection;
 
