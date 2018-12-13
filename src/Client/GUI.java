@@ -19,21 +19,15 @@ import java.io.IOException;
 import java.util.Random;
 
 import static SharedVariables.Messages.*;
+import static SharedVariables.constants.*;
 
 //
 public class GUI extends Application {
 
-    public static final int MIN_TIME_VALUE = 3;
-    public static final int MAX_TIME_VAULE = 6;
-
-    public static final int MIN_BUTTONS_VALUE = 1;
-    public static final int MAX_BUTTONS_VALUE = 4;
-
-    public static final int NUMBER_OF_BUTTONS = 16;
-
     public static Button[] btns = new Button[16];
     private Button startButton = new Button("START");
     private int start = 1;
+
     public boolean running = false;
     public boolean runagain = false;
 
@@ -60,8 +54,6 @@ public class GUI extends Application {
 
         initBtnsArray();
         Group root = new Group();
-
-
 
         startButton.setPrefSize(1000, 100);
         startButton.setStyle("-fx-background-color: #90aa00");
@@ -191,12 +183,16 @@ public class GUI extends Application {
 
         root.getChildren().add(abc);
 
-        Scene scene = new Scene(root, 1000, 500);
+        //Scene scene = new Scene(root, 1000, 500);
+
+        Scene scene = new Scene(root);
+
+        primaryStage.setResizable(false);
 
         primaryStage.setScene(scene);
 
-        //primaryStage.sizeToScene();
-        //primaryStage.setResizable(false);
+        primaryStage.sizeToScene();
+        //
 
         primaryStage.show();
     }
@@ -271,7 +267,9 @@ public class GUI extends Application {
             @Override
             public void handle(ActionEvent event) {
                 multiplayer = true;
-                GameClient gamer = new GameClient(hostField.getText(), Integer.valueOf(portField.getText()));
+
+                player.host = hostField.getText();
+                player.port = Integer.valueOf(portField.getText());
             }
         });
 
@@ -288,20 +286,19 @@ public class GUI extends Application {
 
     public static int getRandomTime(){
         Random random = new Random();
-        int randomNumber = random.nextInt(MAX_TIME_VAULE - MIN_TIME_VALUE) + MIN_TIME_VALUE;
-        randomNumber = randomNumber * 1000; // *1000 for s
+        int randomNumber = random.nextInt(MAX_TIME_VALUE - MIN_TIME_VALUE) + MIN_TIME_VALUE;
         return(randomNumber);
     }
 
     protected int getRandomAmountOfButtons(){
         Random random = new Random();
-        int randomNumber = random.nextInt(MAX_BUTTONS_VALUE - MIN_BUTTONS_VALUE) + MIN_BUTTONS_VALUE;
+        int randomNumber = random.nextInt(MAX_BUTTONS - MIN_BUTTONS) + MIN_BUTTONS;
         return(randomNumber);
     }
 
     protected int getLineRow(){
         Random random = new Random();
-        int randomNumber = random.nextInt((int)Math.sqrt(NUMBER_OF_BUTTONS) - 1) + 1;
+        int randomNumber = random.nextInt((int)Math.sqrt(BUTTON_COUNT) - 1) + 1;
         return(randomNumber);
     }
 
