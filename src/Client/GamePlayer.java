@@ -42,6 +42,8 @@ public class GamePlayer {
         }
 
         this.addActionListener(ackListener);
+        this.addActionListener(randTimeListener);
+        this.addActionListener(randButtonsListener);
 
 
         Thread t = new Thread(){
@@ -85,11 +87,31 @@ public class GamePlayer {
         this.listener.add(l);
     }
 
-    //Get Ack from clients
+    //Get Ack from Server
     private ActionListener ackListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message.equals(clientAck)){
+            if(message.equals(serverStartAck)){
+
+            }
+        }
+    };
+
+    //Get Random Time
+    private ActionListener randTimeListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(message.contains(serverRandTime)){
+
+            }
+        }
+    };
+
+    //Get Random Time
+    private ActionListener randButtonsListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(message.contains(serverRandButton)){
 
             }
         }

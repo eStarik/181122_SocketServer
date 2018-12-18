@@ -313,6 +313,7 @@ public class GUI extends Application {
     public void Multiplayer(){
         player.sendMessage(playerStartMSG);
         try {
+            //TODO
             if(GamePlayer.receive.readUTF() == serverStartAck){
 
                 // Get and set the randomTime, randomButtons...

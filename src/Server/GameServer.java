@@ -5,14 +5,11 @@ import java.awt.event.ActionListener;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Random;
 
 import SharedVariables.GameSelectives;
 import SharedVariables.Messages;
 
 import static SharedVariables.Messages.*;
-import static SharedVariables.constants.MAX_BUTTONS;
-import static SharedVariables.constants.MIN_BUTTONS;
 
 public class GameServer {
     private boolean ready = false;
