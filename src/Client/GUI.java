@@ -52,7 +52,11 @@ public class GUI extends Application {
 
         primaryStage.setTitle("ButtonGame v0.1 Ahrer/Kamleitner");
 
+        /**
+         * This function initialises the ButtonArray
+         */
         initBtnsArray();
+
         Group root = new Group();
 
         startButton.setPrefSize(1000, 100);
@@ -270,6 +274,10 @@ public class GUI extends Application {
 
                 player.host = hostField.getText();
                 player.port = Integer.valueOf(portField.getText());
+                player.start();
+
+                portField.setDisable(true);
+                hostField.setDisable(true);
             }
         });
 
@@ -309,9 +317,11 @@ public class GUI extends Application {
 
                 // Get and set the randomTime, randomButtons...
                 if(GamePlayer.receive.readUTF().contains("RandTime:")){
+                    System.out.println("RandomTime received");
                     randTimeString = GamePlayer.receive.readUTF().split(",");
                     randTime = Integer.valueOf(randTimeString[1]);
                 } else if (GamePlayer.receive.readUTF().contains("RandButton:")){
+                    System.out.println("RandomButton received");
                     randButtonString = GamePlayer.receive.readUTF().split(",");
                     int index = 0;
                     for(int i = 1; i < randButtonString.length; i++){

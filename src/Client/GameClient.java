@@ -58,6 +58,7 @@ public class GameClient {
         connection.send(message); //sendMessage
     }
 
+    /**
     public static void main(String[] args) {
         //create a new instance of chatclient object
         //We need to define the host and the port, our server is running
@@ -80,6 +81,7 @@ public class GameClient {
             }
         }
     }
+     */
 
 }
 
