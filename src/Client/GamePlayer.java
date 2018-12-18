@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import Client.*;
 
 import static SharedVariables.Messages.*;
 
@@ -22,7 +23,7 @@ public class GamePlayer {
     //connection variables
     private Socket connection = new Socket();
     //IO Streams
-    public static DataInputStream receive;
+    public DataInputStream receive;
     private DataOutputStream transmit;
 
     private ArrayList<ActionListener> listener = new ArrayList<>();
@@ -44,6 +45,7 @@ public class GamePlayer {
         this.addActionListener(ackListener);
         this.addActionListener(randTimeListener);
         this.addActionListener(randButtonsListener);
+        this.addActionListener(elseListener);
 
 
         Thread t = new Thread(){
@@ -102,7 +104,7 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.contains(serverRandTime)){
-
+                GUI.randTimeReceive(message);
             }
         }
     };
@@ -112,7 +114,27 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.contains(serverRandButton)){
+                GUI.randButtonReceive(message);
+            }
+        }
+    };
 
+    //
+    private ActionListener serverStartGameListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(message.equals(serverStartGame)){
+                GUI.randButtonReceive(message);
+            }
+        }
+    };
+
+    //
+    private ActionListener elseListener = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+            if(!message.equals(serverStartGame)&& !message.contains(serverRandTime) && !message.contains(serverRandButton) && !message.equals(serverStartAck)){
+                GUI.otherMessage(message);
             }
         }
     };
