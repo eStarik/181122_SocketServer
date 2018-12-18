@@ -1,8 +1,5 @@
 package Client;
 
-import Server.GamePlayer;
-import Client.GUI;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -29,6 +26,8 @@ public class GameClient {
 
         try {
             connection = new GamePlayer(new Socket(host, port));
+
+
 
             for(ActionListener listener : listeners) {
                 connection.addActionListener(listener);
