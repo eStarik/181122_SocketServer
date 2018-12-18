@@ -55,7 +55,7 @@ public class GameServer {
                         String buttons = "";
                         int buttonCount = GameSelectives.randButtonCount();
                         for (int i = 0; i <= buttonCount; i++) {
-                            buttons = buttons + GameSelectives.getButton() + ",";
+                            buttons = buttons + ", " + GameSelectives.getButton();
                         }
                         for (GamePlayer c : clients) {
                             c.send(Messages.serverRandTime + randTime);
