@@ -29,14 +29,14 @@ public class GamePlayer {
 
     private ArrayList<ActionListener> listener = new ArrayList<>();
 
-    public GamePlayer(Socket player){
+    public GamePlayer(Socket player) {
         this.connection = player;
     }
 
-    public void start(){
+    public void start() {
         this.running = true;
 
-        try{
+        try {
             //Initialize the data Streams
             this.receive = new DataInputStream(this.connection.getInputStream());
             this.transmit = new DataOutputStream(this.connection.getOutputStream());
@@ -48,11 +48,11 @@ public class GamePlayer {
         this.addActionListener(ackListener);
         this.addActionListener(massageOutputListener);
 
-        Thread t = new Thread(){
+        Thread t = new Thread() {
             @Override
             public void run() {
 
-                while (running){
+                while (running) {
 
                     try {
                         message = receive.readUTF();
@@ -66,8 +66,8 @@ public class GamePlayer {
         t.start();
     }
 
-    public void send(String message){
-        if(this.transmit != null) {
+    public void send(String message) {
+        if (this.transmit != null) {
             try {
                 transmit.writeUTF(message);
                 transmit.flush();
@@ -76,40 +76,50 @@ public class GamePlayer {
         }
     }
 
-    public void stop(){
+    public void stop() {
         this.running = false;
 
     }
 
-    public void notifyListener (String message){
-        for(ActionListener l : listener){
-            l.actionPerformed(new ActionEvent(this,0,message));
+    public void notifyListener(String message) {
+        for (ActionListener l : listener) {
+            l.actionPerformed(new ActionEvent(this, 0, message));
         }
     }
 
-    public void addActionListener(ActionListener l){
+    public void addActionListener(ActionListener l) {
         this.listener.add(l);
     }
 
-    public boolean playerStarted(){
+    public boolean playerStarted() {
         return startet;
     }
-    public boolean playerAcknowledged(){ return acknowledged;}
-    public boolean playerFinished(){return finished;}
 
-    public void playerStarted(boolean start){
+    public boolean playerAcknowledged() {
+        return acknowledged;
+    }
+
+    public boolean playerFinished() {
+        return finished;
+    }
+
+    public void playerStarted(boolean start) {
         startet = start;
     }
-    public void playerAcknowledged(boolean acknowledge){
+
+    public void playerAcknowledged(boolean acknowledge) {
         acknowledged = acknowledge;
     }
-    public void playerFinished(boolean finish){finished = finish;}
+
+    public void playerFinished(boolean finish) {
+        finished = finish;
+    }
 
     //Actionlistener for ready
     private ActionListener readyListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message.equals(playerStartMSG)){
+            if (message.equals(playerStartMSG)) {
                 playerStarted(true);
                 send(serverStartAck);
             }
@@ -120,7 +130,7 @@ public class GamePlayer {
     private ActionListener ackListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message.equals(clientAck)){
+            if (message.equals(clientAck)) {
                 playerAcknowledged(true);
             }
         }
@@ -130,7 +140,7 @@ public class GamePlayer {
     private ActionListener finishListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if(message.equals(clientFinish)){
+            if (message.equals(clientFinish)) {
                 playerFinished(true);
             }
         }
@@ -144,7 +154,7 @@ public class GamePlayer {
         }
     };
 
-    public void reset(){
+    public void reset() {
         startet = false;
         acknowledged = false;
         running = false;
@@ -153,9 +163,5 @@ public class GamePlayer {
         playerFinished(false);
         playerAcknowledged(false);
         playerStarted(false);
-    }
-
-    public boolean isConnected(){
-        return running;
     }
 }
