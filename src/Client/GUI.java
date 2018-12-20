@@ -308,7 +308,7 @@ public class GUI extends Application {
         player.sendMessage(clientAck);
     }
 
-    public void startGame(String message){
+    public void startGame(){
         runMultiplayer = true;
     }
 

@@ -124,7 +124,7 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.equals(serverStartGame)){
-                GUI.randButtonReceive(message);
+                GUI.randButtonReceive();
             }
         }
     };
