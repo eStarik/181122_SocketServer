@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import Client.*;
 
+import static Client.GUI.*;
 import static SharedVariables.Messages.*;
 
 public class GamePlayer {
@@ -104,7 +105,10 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.contains(serverRandTime)){
-                GUI.randTimeReceive(message);
+                //GUI.randTimeReceive(message);
+                System.out.println("RandomTime received");
+                randTimeString = message.split(",");
+                GUI.randTime = Integer.valueOf(randTimeString[1]);
             }
         }
     };
@@ -114,7 +118,15 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.contains(serverRandButton)){
-                GUI.randButtonReceive(message);
+                System.out.println("RandomButton received");
+                randButtonString = message.split(",");
+                int index = 0;
+                for(int i = 1; i < randButtonString.length; i++){
+                    index++;
+                    // Array with the buttonnumbers to enable
+                    GUI.randButtons[index] = Integer.valueOf(randButtonString[i]);
+                }
+                GUI.player.sendMessage(clientAck);
             }
         }
     };
@@ -124,7 +136,7 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.equals(serverStartGame)){
-                GUI.randButtonReceive();
+                GUI.runMultiplayer = true;
             }
         }
     };
@@ -134,7 +146,18 @@ public class GamePlayer {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(!message.equals(serverStartGame)&& !message.contains(serverRandTime) && !message.contains(serverRandButton) && !message.equals(serverStartAck)){
-                GUI.otherMessage(message);
+               // GUI.otherMessage(message);
+                if (message.equals(serverClientWon)) {
+                    System.out.println("You won :)");
+                } else if (message.equals(serverClientLost)) {
+                    System.out.println("You lost :(");
+                } else if (message.equals(serverReset)) {
+                    for (int i = 0; i <= 15; i++) {
+                        btns[i].setDisable(true);
+                        btns[i].setStyle(null);
+                    }
+                    //reset = true;
+                }
             }
         }
     };

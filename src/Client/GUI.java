@@ -30,16 +30,16 @@ public class GUI extends Application {
     public boolean runagain = false;
 
     public boolean multiplayer = false;
-    public boolean runMultiplayer = false;
+    public static boolean runMultiplayer = false;
     public boolean reset = false;
 
-    public String[] randTimeString;
-    public String[] randButtonString;
+    public static String[] randTimeString;
+    public static String[] randButtonString;
 
-    public int randTime;
-    public int[] randButtons;
+    public static int randTime;
+    public static int[] randButtons;
 
-    public GameClient player = new GameClient("localhost", 1234);
+    public static GameClient player = new GameClient("localhost", 1234);
 
     public static void main(String[] args) {
         launch(args);
