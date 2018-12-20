@@ -27,8 +27,6 @@ public class GameClient {
         try {
             connection = new GamePlayer(new Socket(host, port));
 
-
-
             for(ActionListener listener : listeners) {
                 connection.addActionListener(listener);
             }
@@ -57,31 +55,6 @@ public class GameClient {
     public void sendMessage(String message) {
         connection.send(message); //sendMessage
     }
-
-    /**
-    public static void main(String[] args) {
-        //create a new instance of chatclient object
-        //We need to define the host and the port, our server is running
-        GameClient client = new GameClient("localhost", 1234);
-        client.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(e.getActionCommand());
-            }
-        });
-
-        client.start();
-        Scanner input = new Scanner(System.in);
-        while (client.isConnected()) {
-            client.sendMessage(input.nextLine());
-            try{
-                Thread.sleep((long) 10);
-            }catch(Exception e){
-
-            }
-        }
-    }
-     */
 
 }
 

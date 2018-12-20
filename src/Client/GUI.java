@@ -66,16 +66,18 @@ public class GUI extends Application {
                     System.out.println("started");
                     startButton.setText("STOP");
                     start = 0;
-                    running = true;
+                    //running = true;
 
                     if (multiplayer) {
                         Thread multiplayerThread = new Thread() {
                             @Override
                             public void run() {
                                 while (runMultiplayer) {
+
                                     reset = false;
                                     try {
                                         Thread.sleep(randTime);
+                                        System.out.println("randTime");
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
@@ -166,8 +168,6 @@ public class GUI extends Application {
 
         root.getChildren().add(abc);
 
-        //Scene scene = new Scene(root, 1000, 500);
-
         Scene scene = new Scene(root);
 
         primaryStage.setResizable(false);
@@ -175,7 +175,6 @@ public class GUI extends Application {
         primaryStage.setScene(scene);
 
         primaryStage.sizeToScene();
-        //
 
         primaryStage.show();
     }
@@ -189,7 +188,6 @@ public class GUI extends Application {
             b.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    //b.setStyle("-fx-background-color: #dedede");
                     b.setStyle(null);
                     b.setDisable(true);
                 }
@@ -208,7 +206,7 @@ public class GUI extends Application {
     private Pane initSettings(){
         BorderPane settingPane = new BorderPane();
         GridPane radioPane = new GridPane();
-        GridPane hostportPane = new GridPane();
+
         final ToggleGroup buttonGroup = new ToggleGroup();
         RadioButton spButton = new RadioButton("SinglePlayer");
         spButton.setToggleGroup(buttonGroup);
@@ -221,6 +219,7 @@ public class GUI extends Application {
         TextField portField = new TextField();
         Label hostLabel = new Label(" Host: ");
         Label portLabel = new Label(" Port: ");
+        GridPane hostportPane = new GridPane();
         settingPane.setLeft(radioPane);
         hostportPane.add(hostLabel,0,0);
         hostportPane.add(hostField,1,0);
@@ -229,7 +228,6 @@ public class GUI extends Application {
         Button okButton = new Button("OK");
         hostField.setDisable(true);
         portField.setDisable(true);
-        okButton.setDisable(true);
         settingPane.setCenter(hostportPane);
         settingPane.setRight(okButton);
         buttonGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
@@ -238,22 +236,30 @@ public class GUI extends Application {
                 if(spButton.isSelected() == true){
                     hostField.setDisable(true);
                     portField.setDisable(true);
-                    okButton.setDisable(true);
                 } else if (mpButton.isSelected() == true){
                     hostField.setDisable(false);
                     portField.setDisable(false);
-                    okButton.setDisable(false);
+
                 }
             }
         });
         okButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                multiplayer = true;
 
-                player.host = hostField.getText();
-                player.port = Integer.valueOf(portField.getText());
-                player.start();
+                if(spButton.isSelected()){
+                    running = true;
+                } else if(mpButton.isSelected()){
+                    multiplayer = true;
+
+                    player.host = hostField.getText();
+                    player.port = Integer.valueOf(portField.getText());
+                    player.start();
+                    player.sendMessage(playerStartMSG);
+                }
+
+
+
 
                 portField.setDisable(true);
                 hostField.setDisable(true);
@@ -290,39 +296,4 @@ public class GUI extends Application {
         return(randomNumber);
     }
 
-    public void randTimeReceive(String massage){
-        System.out.println("RandomTime received");
-        randTimeString = massage.split(",");
-        randTime = Integer.valueOf(randTimeString[1]);
-    }
-
-    public void randButtonReceive(String message){
-        System.out.println("RandomButton received");
-        randButtonString = message.split(",");
-        int index = 0;
-        for(int i = 1; i < randButtonString.length; i++){
-            index++;
-            // Array with the buttonnumbers to enable
-            randButtons[index] = Integer.valueOf(randButtonString[i]);
-        }
-        player.sendMessage(clientAck);
-    }
-
-    public void startGame(){
-        runMultiplayer = true;
-    }
-
-    public void otherMessage(String message) {
-        if (message.equals(serverClientWon)) {
-            System.out.println("You won :)");
-        } else if (message.equals(serverClientLost)) {
-            System.out.println("You lost :(");
-        } else if (message.equals(serverReset)) {
-            for (int i = 0; i <= 15; i++) {
-                btns[i].setDisable(true);
-                btns[i].setStyle(null);
-            }
-            reset = true;
-        }
-    }
 }

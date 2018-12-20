@@ -47,6 +47,7 @@ public class GamePlayer {
         this.addActionListener(randTimeListener);
         this.addActionListener(randButtonsListener);
         this.addActionListener(elseListener);
+        this.addActionListener(serverStartGameListener);
 
 
         Thread t = new Thread(){
@@ -82,7 +83,7 @@ public class GamePlayer {
 
     public void notifyListener (String message){
         for(ActionListener l : listener){
-            l.actionPerformed(new ActionEvent(this,0,message));
+            l.actionPerformed(new ActionEvent(this,0, message));
         }
     }
 
@@ -106,9 +107,10 @@ public class GamePlayer {
         public void actionPerformed(ActionEvent actionEvent) {
             if(message.contains(serverRandTime)){
                 //GUI.randTimeReceive(message);
-                System.out.println("RandomTime received");
+
                 randTimeString = message.split(",");
                 GUI.randTime = Integer.valueOf(randTimeString[1]);
+                System.out.println("RandomTime received " + randTimeString[1]);
             }
         }
     };
