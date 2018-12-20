@@ -69,6 +69,9 @@ public class GUI extends Application {
                     //running = true;
 
                     if (multiplayer) {
+                        player.start();
+                        player.sendMessage(playerStartMSG);
+
                         Thread multiplayerThread = new Thread() {
                             @Override
                             public void run() {
@@ -254,12 +257,11 @@ public class GUI extends Application {
 
                     player.host = hostField.getText();
                     player.port = Integer.valueOf(portField.getText());
-                    player.start();
-                    player.sendMessage(playerStartMSG);
+                    //player.start();
+                    //player.sendMessage(playerStartMSG);
+
+
                 }
-
-
-
 
                 portField.setDisable(true);
                 hostField.setDisable(true);
